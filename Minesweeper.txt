@@ -1,0 +1,125 @@
+#include <iostream>
+#include <vector>
+
+using namespace std;
+
+const int ROWS = 5;
+const int COLS = 5;
+
+int target = 14;
+int blank = 0;
+
+
+//int nx;
+//int ny;
+
+bool isValid(int x, int y) {
+    return (x >= 0 && x <= ROWS && y >= 0 && y <= COLS);
+}
+
+int countAdjacentMines(const char(&board)[ROWS][COLS], int x, int y) {
+    
+    int count = 0;
+    if (isValid(x-1,y-1) && board[x-1][y-1] == 'M') {
+        count += 1;
+    }
+    if (isValid(x-1,y) && board[x-1][y] == 'M') {
+        count += 1;
+    }
+    if (isValid(x-1,y+1) && board[x-1][y+1] == 'M') {
+        count += 1;
+    }
+    if (isValid(x,y-1) && board[x][y-1] == 'M') {
+        count += 1;
+    }
+    if (isValid(x,y+1) && board[x][y+1] == 'M') {
+        count += 1;
+    }
+    if (isValid(x+1,y-1) && board[x+1][y-1] == 'M') {
+        count += 1;
+    }
+    if (isValid(x+1,y) && board[x+1][y] == 'M') {
+        count += 1;
+    }
+    if (isValid(x+1,y+1) && board[x+1][y+1] == 'M') {
+        count += 1;
+    }
+    
+    return count;
+}
+
+void flood_fill(char(&board)[ROWS][COLS], int x, int y) {
+    if (!isValid(x, y) || board[x][y] == 'M' || board[x][y] != '0') {
+        return;
+    }
+    
+
+    board[x][y] = countAdjacentMines(board, x, y) + '0';
+    blank++;
+    
+    flood_fill(board,x-1,y);
+    flood_fill(board,x,y-1);
+    flood_fill(board,x,y+1);
+    flood_fill(board,x+1,y);
+}
+
+void printBoard(char(&board)[ROWS][COLS]) {
+    for (const auto& row : board) {
+            for (char cell : row) {
+                if (cell == 'M') {
+                    cout << '0'<< ' ';
+                }
+                else
+                cout << cell<<' ';
+            }
+            cout << endl;
+    }    
+}
+
+int main() {
+    char minesweeperBoard[ROWS][COLS] = {
+        {'0', 'M', '0', '0', 'M'},
+        {'0', 'M', '0', 'M', '0'},
+        {'0', '0', 'M', '0', '0'},
+        {'M', '0', 'M', 'M', 'M'},
+        {'0', 'M', '0', '0', 'M'}
+    };
+
+    int x = 0;
+    int y = 0;
+    int quit;
+    
+     printBoard(minesweeperBoard);
+    
+    while (1){
+        
+        cout << "Enter the coordinates " << endl;
+        cin >> x >> y;    
+        
+        if (minesweeperBoard[x][y] == 'M') {
+            cout << "Oops that was a mine";
+            return 0;
+        }
+        flood_fill(minesweeperBoard, x, y);
+        
+        printBoard(minesweeperBoard);
+        
+       
+    
+        if (blank== target) {
+            cout << "You won" << endl;
+            return 0;
+        }
+        else{
+        cout << "Do you want to quit ? (To quit --> 1 || To continue --> any number) " << endl;
+        cin >> quit;
+        
+        if (quit == 1)
+            return 0;
+        
+        else
+            continue;
+        }
+    }
+    return 0;
+}
